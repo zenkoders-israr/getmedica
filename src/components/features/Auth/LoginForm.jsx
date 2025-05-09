@@ -43,9 +43,13 @@ function LoginForm() {
         email: "Sample@gmail.com",
       })
     );
-    navigate("/dashboard");
 
     // mutate(formData);
+
+    setTimeout(() => {
+      window.location.replace('/dashboard');
+    }, 1000);
+
   };
 
   return (
