@@ -18,3 +18,6 @@ export const specializationOptions = [
   { label: 'General Surgery', value: 4 },
   { label: 'Radiology', value: 5 },
 ];
+
+
+export const drawerWidth = 300

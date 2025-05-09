@@ -6,9 +6,10 @@ import { TextField, Toast } from "../../controls";
 import { useLogin } from "../../../api/auth/useAuthMutations";
 import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../../utils/helper";
-import { setUserAuth } from "../../../redux/Auth/Reducer";
-import {} from "../../../redux/Auth/Reducer";
+import { setUserAuth, setUser } from "../../../redux/Auth/Reducer";
 import { useDispatch } from "react-redux";
+import { USER_ROLES } from "../../../utils/constant";
+import { ToastRef } from "../../controls/Toast";
 
 function LoginForm() {
   const navigate = useNavigate();
@@ -31,9 +32,19 @@ function LoginForm() {
 
   const handleLogin = async () => {
     if (!formData.email || !formData.password)
-      return Toast.showSnackbar("Required Fields are missing", "error");
+      return ToastRef.showSnackbar("Required Fields are missing", "error");
 
-    mutate(formData);
+    dispatch(setUserAuth(true));
+    dispatch(
+      setUser({
+        name: "Israr Ansari",
+        user_type: USER_ROLES.DOCTOR,
+        email: "Sample@gmail.com",
+      })
+    );
+    navigate("/dashboard");
+
+    // mutate(formData);
   };
 
   return (
