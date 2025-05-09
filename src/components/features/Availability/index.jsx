@@ -6,8 +6,8 @@ function Availability() {
     <Box
       sx={{
         mt: 5,
-       ml:2,
-       mr:2
+        ml: 2,
+        mr: 2,
       }}
     >
       <Typography

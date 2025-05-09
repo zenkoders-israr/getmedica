@@ -62,7 +62,7 @@ const Header = () => {
         />
       </Box>
 
-      <Box sx={{ mr: 2, mt: 2, width: "8vw" }}>
+      <Box sx={{ mr: 2, mt: 2}}>
         <Typography
           variant="body2"
           color="textSecondary"

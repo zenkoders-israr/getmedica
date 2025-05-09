@@ -10,13 +10,14 @@ import {
 import { Add } from "@mui/icons-material";
 import { colors } from "../../../theme/colors";
 import TimeSlot from "./TimeSlot";
-import { daysOfWeek, defaultTimeSlot } from "./constant";
+import {  defaultTimeSlot } from "./constant";
 import { useSetAvailability } from "../../../api/availability/useAvailabilityMutations";
 import { QueryClient } from "@tanstack/react-query";
 import { AVAILABILITY_KEYS } from "../../../api/availability/queryKeys";
 import { ToastRef } from "../../controls/Toast";
 import { getErrorMessage } from "../../../utils/helper";
 import { formatTime12Hour } from "./helper";
+import { DAYS } from "../../../utils/constant";
 
 const Schedular = () => {
   const queryClient = new QueryClient();
@@ -27,54 +28,54 @@ const Schedular = () => {
   });
 
   const [schedule, setSchedule] = useState(
-    daysOfWeek.reduce((acc, day) => {
-      acc[day] = { enabled: false, slots: [{ ...defaultTimeSlot }] };
+    DAYS.reduce((acc, { value, label }) => {
+      acc[value] = { label, enabled: false, slots: [{ ...defaultTimeSlot }] };
       return acc;
     }, {})
   );
 
-  const handleToggleDay = (day) => {
+  const handleToggleDay = (value) => {
     setSchedule((prev) => {
-      const isEnabled = !prev[day].enabled;
+      const isEnabled = !prev[value].enabled;
       return {
         ...prev,
-        [day]: {
-          ...prev[day],
+        [value]: {
+          ...prev[value],
           enabled: isEnabled,
-          slots: isEnabled ? [{ ...defaultTimeSlot }] : prev[day].slots,
+          slots: isEnabled ? [{ ...defaultTimeSlot }] : prev[value].slots,
         },
       };
     });
   };
 
-  const handleTimeChange = (day, index, field, value) => {
+  const handleTimeChange = (value, index, field, fieldValue) => {
     setSchedule((prev) => {
-      const updatedSlots = [...prev[day].slots];
-      updatedSlots[index][field] = value;
+      const updatedSlots = [...prev[value].slots];
+      updatedSlots[index][field] = fieldValue;
       return {
         ...prev,
-        [day]: { ...prev[day], slots: updatedSlots },
+        [value]: { ...prev[value], slots: updatedSlots },
       };
     });
   };
 
-  const handleAddSlot = (day) => {
+  const handleAddSlot = (value) => {
     setSchedule((prev) => ({
       ...prev,
-      [day]: {
-        ...prev[day],
-        slots: [...prev[day].slots, { ...defaultTimeSlot }],
+      [value]: {
+        ...prev[value],
+        slots: [...prev[value].slots, { ...defaultTimeSlot }],
       },
     }));
   };
 
-  const handleRemoveSlot = (day, index) => {
+  const handleRemoveSlot = (value, index) => {
     setSchedule((prev) => {
-      const updatedSlots = prev[day].slots.filter((_, i) => i !== index);
+      const updatedSlots = prev[value].slots.filter((_, i) => i !== index);
       return {
         ...prev,
-        [day]: {
-          ...prev[day],
+        [value]: {
+          ...prev[value],
           slots: updatedSlots.length ? updatedSlots : [{ ...defaultTimeSlot }],
         },
       };
@@ -93,7 +94,7 @@ const Schedular = () => {
       return;
     }
 
-    for (const [day, { slots }] of enabledDays) {
+    for (const [value, { label, slots }] of enabledDays) {
       const seen = new Set();
 
       for (let i = 0; i < slots.length; i++) {
@@ -101,29 +102,27 @@ const Schedular = () => {
 
         if (!from || !to) {
           errors.push(
-            `${day}: Please enter both "from" and "to" time in slot ${i + 1}`
+            `${label}: Please enter both "from" and "to" time in slot ${i + 1}`
           );
           continue;
         }
 
         if (from >= to) {
           errors.push(
-            `${day}: "From" time must be earlier than "To" time in slot ${
+            `${label}: "From" time must be earlier than "To" time in slot ${
               i + 1
             } (${formatTime12Hour(from)} - ${formatTime12Hour(to)})`
           );
-
           continue;
         }
 
         const slotKey = `${from}-${to}`;
         if (seen.has(slotKey)) {
           errors.push(
-            `${day}: Duplicate time slot "${formatTime12Hour(
+            `${label}: Duplicate time slot "${formatTime12Hour(
               from
             )} - ${formatTime12Hour(to)}"`
           );
-
           continue;
         }
         seen.add(slotKey);
@@ -135,10 +134,11 @@ const Schedular = () => {
       return;
     }
 
-    const payload = enabledDays.map(([day, { slots }]) => ({
-      day,
+    const payload = enabledDays.map(([value, { slots }]) => ({
+      day: Number(value),
       slots,
     }));
+
     console.log({ payload });
     // mutate(payload);
   };
@@ -152,7 +152,6 @@ const Schedular = () => {
               Select Day
             </Typography>
           </Grid>
-
           <Grid size={9}>
             <Typography sx={{ fontSize: "16px", fontWeight: 600 }}>
               Select Timing
@@ -160,18 +159,19 @@ const Schedular = () => {
           </Grid>
         </Grid>
         <Grid container spacing={2} sx={{ mt: 4 }}>
-          {daysOfWeek.map((day) => (
-            <Grid size={12} key={day}>
+          {DAYS.map(({ label, value }) => (
+            <Grid size={12} key={value}>
               <Grid container spacing={1}>
                 {/* Day Check box */}
                 <Grid size={2}>
                   <Box display="flex" alignItems="center">
                     <Checkbox
-                      checked={schedule[day].enabled}
-                      onChange={() => handleToggleDay(day)}
+                      checked={schedule[value].enabled}
+                      onChange={() => handleToggleDay(value)}
                       sx={{
                         "&.Mui-checked": {
-                          color: schedule[day].enabled && colors.primaryColor,
+                          color:
+                            schedule[value].enabled && colors.primaryColor,
                         },
                       }}
                     />
@@ -179,29 +179,29 @@ const Schedular = () => {
                       sx={{
                         fontSize: 16,
                         fontWeight: 400,
-                        color: schedule[day].enabled
+                        color: schedule[value].enabled
                           ? "black"
                           : colors.textMutedColor,
                       }}
                     >
-                      {day}
+                      {label}
                     </Typography>
                   </Box>
                 </Grid>
 
                 {/* Time slot */}
                 <Grid size={9}>
-                  {schedule[day].enabled ? (
-                    schedule[day].slots.map((slot, index) => (
+                  {schedule[value].enabled ? (
+                    schedule[value].slots.map((slot, index) => (
                       <TimeSlot
                         key={index}
                         slot={slot}
-                        onTimeChange={(field, value) =>
-                          handleTimeChange(day, index, field, value)
+                        onTimeChange={(field, val) =>
+                          handleTimeChange(value, index, field, val)
                         }
                         onRemove={
-                          schedule[day].slots.length > 1
-                            ? () => handleRemoveSlot(day, index)
+                          schedule[value].slots.length > 1
+                            ? () => handleRemoveSlot(value, index)
                             : null
                         }
                       />
@@ -209,10 +209,7 @@ const Schedular = () => {
                   ) : (
                     <Typography
                       color={colors.textMutedColor}
-                      sx={{
-                        mt: 1,
-                        ml: 4,
-                      }}
+                      sx={{ mt: 1, ml: 4 }}
                     >
                       Unavailable
                     </Typography>
@@ -220,7 +217,7 @@ const Schedular = () => {
                 </Grid>
 
                 {/* Add Button */}
-                {schedule[day].enabled && (
+                {schedule[value].enabled && (
                   <Grid size={1}>
                     <Box
                       sx={{
@@ -234,7 +231,7 @@ const Schedular = () => {
                       }}
                     >
                       <IconButton
-                        onClick={() => handleAddSlot(day)}
+                        onClick={() => handleAddSlot(value)}
                         size="small"
                         color="primary"
                       >
@@ -250,7 +247,7 @@ const Schedular = () => {
       </Box>
 
       <Grid container>
-        <Grid size={12} display={"flex"} justifyContent={"flex-end"}>
+        <Grid size={12} display="flex" justifyContent="flex-end">
           <Button
             variant="contained"
             size="large"

@@ -4,7 +4,7 @@ export const cardContainer = {
   height: "20vh",
   width: "100%",
   border: `1px solid ${colors.primaryBorderColor}`,
-  borderRadius: "10px",
+  borderRadius: "16px",
   display: "flex",
   flexDirection: "column",
   justifyContent: "space-between",
@@ -19,8 +19,8 @@ export const cardHeader = {
 };
 
 export const avatar = {
-  height: 50,
-  width: 50,
+  height: 36,
+  width: 36,
 };
 
 export const nameAndSpecialization = {

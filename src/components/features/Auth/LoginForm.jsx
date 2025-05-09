@@ -39,7 +39,7 @@ function LoginForm() {
     dispatch(
       setUser({
         name: "Israr Ansari P",
-        user_type: USER_ROLES.PATIENT,
+        user_type: USER_ROLES.DOCTOR,
         email: "Sample@gmail.com",
       })
     );
