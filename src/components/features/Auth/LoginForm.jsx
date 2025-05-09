@@ -20,7 +20,7 @@ function LoginForm() {
       dispatch(setUserAuth(true));
       dispatch(setUser(data));
       navigate("/dashboard");
-      localStorage.setItem("@TOKEN");
+      localStorage.setItem("@TOKEN", data?.token);
     },
     onError: (err) => Toast?.showSnackbar(getErrorMessage(err), "error"),
   });
@@ -38,8 +38,8 @@ function LoginForm() {
     dispatch(setUserAuth(true));
     dispatch(
       setUser({
-        name: "Israr Ansari",
-        user_type: USER_ROLES.DOCTOR,
+        name: "Israr Ansari P",
+        user_type: USER_ROLES.PATIENT,
         email: "Sample@gmail.com",
       })
     );

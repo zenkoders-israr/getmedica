@@ -70,7 +70,7 @@ const NavItem = ({ item, level }) => {
           <Typography
             sx={{
               fontSize: "16px",
-              fontWeight: 500,
+              fontWeight: 600,
               color: isSelected ? "#18A0FB" : "white",
             }}
           >

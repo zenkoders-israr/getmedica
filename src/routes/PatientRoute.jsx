@@ -4,6 +4,7 @@ import { Loadable } from '../components/controls';
 import PrivateRoute from './PrivateRoute';
 
 const Dashboard = Loadable(lazy(() => import('../pages/Dashboard')));
+const DoctorDetails = Loadable(lazy(() => import('../pages/DoctorDetails')));
 
 const PatientRoutes = {
   path: '/',
@@ -12,6 +13,10 @@ const PatientRoutes = {
     {
       path: '/dashboard',
       element: <Dashboard />
+    },
+    {
+      path: '/dashboard/details',
+      element: <DoctorDetails />
     },
   ]
 };
