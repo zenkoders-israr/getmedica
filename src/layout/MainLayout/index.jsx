@@ -5,26 +5,19 @@ import { AppBar, Box, CssBaseline, Toolbar, styled } from "@mui/material";
 import Header from "./Header";
 import Sidebar from "./Sidebar";
 import React from "react";
-import { drawerWidth } from "../../utils/constant";
+import { drawerWidth, headerHeight } from "../../utils/constant";
+import { colors } from "../../theme/colors";
 
 const Main = styled("main")(({ theme }) => ({
   ...theme.typography.mainContent,
-  marginLeft: `${drawerWidth}px`,
   width: `calc(100% - ${drawerWidth}px)`,
   padding: "16px",
+  marginTop: `${headerHeight}px`,
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.easeOut,
     duration: theme.transitions.duration.enteringScreen,
   }),
-  [theme.breakpoints.down("md")]: {
-    marginLeft: `${drawerWidth}px`,
-    width: `calc(100% - ${drawerWidth}px)`,
-  },
-  [theme.breakpoints.down("sm")]: {
-    marginLeft: `${drawerWidth}px`,
-    width: `calc(100% - ${drawerWidth}px)`,
-    marginRight: "10px",
-  },
+
 }));
 
 const MainLayout = () => {
@@ -39,9 +32,8 @@ const MainLayout = () => {
         color="inherit"
         elevation={0}
         sx={{
-          zIndex: theme.zIndex.drawer + 1,
-          bgcolor: theme.palette.background.default,
-          transition: theme.transitions.create("width"),
+          backgroundColor: `${colors.secondaryBgColor}`,
+          height: '80px'
         }}
       >
         <Toolbar>

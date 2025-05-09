@@ -20,6 +20,7 @@ function LoginForm() {
       dispatch(setUserAuth(true));
       dispatch(setUser(data));
       navigate("/dashboard");
+      localStorage.setItem("@TOKEN");
     },
     onError: (err) => Toast?.showSnackbar(getErrorMessage(err), "error"),
   });

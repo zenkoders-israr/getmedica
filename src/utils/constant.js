@@ -21,3 +21,4 @@ export const specializationOptions = [
 
 
 export const drawerWidth = 300
+export const headerHeight = 80
