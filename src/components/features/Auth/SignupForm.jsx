@@ -19,8 +19,8 @@ import { useNavigate } from "react-router-dom";
 
 function SignupForm() {
   const navigate = useNavigate();
-  const { mutate, isLoading } = useSignup({
-    onSuccess: () => Navigate("/login"),
+  const { mutate, isPending: isLoading } = useSignup({
+    onSuccess: () => navigate("/login"),
     onError: (err) => ToastRef.showSnackbar(getErrorMessage(err), "error"),
   });
 

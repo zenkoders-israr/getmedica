@@ -15,7 +15,7 @@ function LoginForm() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { mutate, isLoading } = useLogin({
+  const { mutate, isPending: isLoading } = useLogin({
     onSuccess: (data) => {
       dispatch(setUserAuth(true));
       dispatch(setUser(data));
