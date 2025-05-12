@@ -8,7 +8,6 @@ import { useNavigate } from "react-router-dom";
 import { getErrorMessage } from "../../../utils/helper";
 import { setUserAuth, setUser } from "../../../redux/Auth/Reducer";
 import { useDispatch } from "react-redux";
-import { USER_ROLES } from "../../../utils/constant";
 import { ToastRef } from "../../controls/Toast";
 
 function LoginForm() {
@@ -18,9 +17,11 @@ function LoginForm() {
   const { mutate, isPending: isLoading } = useLogin({
     onSuccess: (data) => {
       dispatch(setUserAuth(true));
-      dispatch(setUser(data));
-      navigate("/dashboard");
-      localStorage.setItem("@TOKEN", data?.token);
+      dispatch(setUser(data?.user));
+      localStorage.setItem("@TOKEN", data?.accessToken);
+      setTimeout(() => {
+        window.location.replace("/dashboard");
+      }, 1000);
     },
     onError: (err) => Toast?.showSnackbar(getErrorMessage(err), "error"),
   });
@@ -35,21 +36,7 @@ function LoginForm() {
     if (!formData.email || !formData.password)
       return ToastRef.showSnackbar("Required Fields are missing", "error");
 
-    dispatch(setUserAuth(true));
-    dispatch(
-      setUser({
-        name: "Israr Ansari P",
-        user_type: USER_ROLES.PATIENT,
-        email: "Sample@gmail.com",
-      })
-    );
-
-    // mutate(formData);
-
-    setTimeout(() => {
-      window.location.replace('/dashboard');
-    }, 1000);
-
+    mutate(formData);
   };
 
   return (

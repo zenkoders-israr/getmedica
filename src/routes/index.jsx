@@ -27,7 +27,7 @@ const NotFoundPage = () => (
 
 const AppRouter = () => {
   const user = useSelector(selectUser);
-  const role = user?.user_type;
+  const role = Number(user?.user_type);
 
   const createRoutes = (role) => {
     switch (role) {

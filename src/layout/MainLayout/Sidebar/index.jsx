@@ -10,6 +10,7 @@ import MenuList from "./MenuList";
 // import LogoSection from "../LogoSection";
 import { drawerWidth } from "../../../utils/constant";
 import { images } from "../../../assets/images";
+import { colors } from "../../../theme/colors";
 
 const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
   const theme = useTheme();
@@ -21,10 +22,10 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         <PerfectScrollbar
           component="div"
           style={{
-            height: "100vh",
+            height: "100%",
             paddingLeft: "16px",
             paddingRight: "16px",
-            backgroundColor: "#18A0FB",
+            backgroundColor:colors.primaryColor,
           }}
         >
           <Box
@@ -63,7 +64,7 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         width: matchUpMd ? drawerWidth : "auto",
         backgroundColor: "#18A0FB",
       }}
-      aria-label="mailbox folders"
+      // aria-label="mailbox folders"
     >
       <Drawer
         container={container}
@@ -74,10 +75,12 @@ const Sidebar = ({ drawerOpen, drawerToggle, window }) => {
         sx={{
           "& .MuiDrawer-paper": {
             width: drawerWidth,
-            background: theme.palette.background.default,
+            // background: theme.palette.background.default,
             color: theme.palette.text.primary,
             borderRight: "none",
-        
+            height: "100vh", 
+            overflow: "hidden", 
+            backgroundColor:colors.primaryColor,
           },
         }}
         ModalProps={{ keepMounted: true }}

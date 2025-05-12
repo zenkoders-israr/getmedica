@@ -2,11 +2,13 @@ import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../interceptor";
 import { AuthEndPoint } from "./endPoints";
 import { BackdropLoaderRef } from "../../components/controls/BackdropLoader";
+import { USER_ROLES } from "../../utils/constant";
 
-export const useSignup = ({ onSuccess = () => {}, onError = () => {} }) => {
+export const useSignup = ({ onSuccess = () => {}, onError = () => {}, onSettled = () => {} }) => {
   return useMutation({
-    mutationFn: async (newUser) => {
-      const res = await axiosInstance.post(AuthEndPoint.SIGNUP, newUser);
+    mutationFn: async ({role, ...newUser}) => {
+      const endPoint = role == USER_ROLES.DOCTOR ? AuthEndPoint.DOCTOR_SIGNUP : AuthEndPoint.PATIENT_SIGNUP;
+      const res = await axiosInstance.post(endPoint, newUser);
       return res.data;
     },
     onMutate: () => {
@@ -14,7 +16,10 @@ export const useSignup = ({ onSuccess = () => {}, onError = () => {} }) => {
     },
 
     onSuccess: () => onSuccess(),
-    onError: (error) => onError(error),
+    onError: (error) => {
+      BackdropLoaderRef?.handleClose();
+      onError(error);
+    },
     onSettled: () => {
       onSettled();
       BackdropLoaderRef?.handleClose();
@@ -29,17 +34,18 @@ export const useLogin = ({
 }) => {
   return useMutation({
     mutationFn: async (credentials) => {
-      const res = await axios.post(AuthEndPoint.SIGNIN, credentials);
+      const res = await axiosInstance.post(AuthEndPoint.SIGNIN, credentials);
       return res.data;
     },
     onMutate: () => {
       BackdropLoaderRef?.handleOpen();
     },
     onSuccess: (data) => {
-      onSuccess(data);
+      onSuccess(data?.data);
     },
     onError: (error) => {
       onError(error);
+      BackdropLoaderRef?.handleClose();
     },
     onSettled: () => {
       onSettled();
