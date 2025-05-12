@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Box,
   Button,
@@ -10,21 +10,30 @@ import {
 import { Add } from "@mui/icons-material";
 import { colors } from "../../../theme/colors";
 import TimeSlot from "./TimeSlot";
-import {  defaultTimeSlot } from "./constant";
+import { defaultTimeSlot } from "./constant";
 import { useSetAvailability } from "../../../api/availability/useAvailabilityMutations";
-import { QueryClient } from "@tanstack/react-query";
+import { useGetAvailability } from "../../../api/availability/useAvailabilityQuery";
+import { useQueryClient } from '@tanstack/react-query';
 import { AVAILABILITY_KEYS } from "../../../api/availability/queryKeys";
 import { ToastRef } from "../../controls/Toast";
 import { getErrorMessage } from "../../../utils/helper";
 import { formatTime12Hour } from "./helper";
 import { DAYS } from "../../../utils/constant";
-
+import { BackdropLoaderRef } from "../../controls/BackdropLoader";
 const Schedular = () => {
-  const queryClient = new QueryClient();
-  const { mutate, isPending } = useSetAvailability({
-    onSuccess: () =>
-      queryClient.invalidateQueries([AVAILABILITY_KEYS.GET_AVAILABILITY]),
-    onError: (err) => ToastRef.showSnackbar(getErrorMessage(err), "error"),
+  const queryClient = useQueryClient();
+  const { data: availability } = useGetAvailability();
+
+  const { mutate } = useSetAvailability({
+    onSuccess: () => {
+      queryClient.invalidateQueries([AVAILABILITY_KEYS.GET_AVAILABILITY]);
+      ToastRef.showSnackbar("Availability updated successfully", "success");
+      BackdropLoaderRef?.handleClose();
+    },
+    onError: (err) => {
+      ToastRef.showSnackbar(getErrorMessage(err), "error");
+      BackdropLoaderRef?.handleClose();
+    },
   });
 
   const [schedule, setSchedule] = useState(
@@ -33,6 +42,34 @@ const Schedular = () => {
       return acc;
     }, {})
   );
+
+  useEffect(() => {
+    if (!availability?.length) return;
+
+    const availabilityMap = availability.reduce((map, item) => {
+      map[item.schedule_day] = item;
+      return map;
+    }, {});
+
+    const updatedSchedule = DAYS.reduce((acc, { value, label }) => {
+      const matchedDay = availabilityMap[value];
+
+      acc[value] = {
+        label,
+        enabled: Boolean(matchedDay),
+        slots: matchedDay?.slots?.length
+          ? matchedDay.slots.map(({ start_time, end_time }) => ({
+              from: start_time,
+              to: end_time,
+            }))
+          : [{ ...defaultTimeSlot }],
+      };
+
+      return acc;
+    }, {});
+
+    setSchedule(updatedSchedule);
+  }, [availability]);
 
   const handleToggleDay = (value) => {
     setSchedule((prev) => {
@@ -135,12 +172,12 @@ const Schedular = () => {
     }
 
     const payload = enabledDays.map(([value, { slots }]) => ({
-      day: Number(value),
+      scheduleDay: Number(value),
       slots,
     }));
 
-    console.log({ payload });
-    // mutate(payload);
+    BackdropLoaderRef?.handleOpen();
+    mutate(payload);
   };
 
   return (
@@ -170,8 +207,7 @@ const Schedular = () => {
                       onChange={() => handleToggleDay(value)}
                       sx={{
                         "&.Mui-checked": {
-                          color:
-                            schedule[value].enabled && colors.primaryColor,
+                          color: schedule[value].enabled && colors.primaryColor,
                         },
                       }}
                     />
