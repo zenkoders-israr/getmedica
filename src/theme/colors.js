@@ -3,5 +3,8 @@ export const colors  ={
     secondaryBgColor: "#F2F5F6",
     textMutedColor: "#8D9A9B",
     primaryBorderColor: "#D8DFE0",
-    textColorGray70: "#626D6F"
+    textColorGray70: "#626D6F",
+    textColorGray50: "#9EA9AA",
+    textPrimaryColor: "#FFFFFF",
+    textSecondaryColor: "#25292A",
 }

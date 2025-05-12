@@ -1,7 +1,7 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../interceptor";
 import { AuthEndPoint } from "./endPoints";
-import { Loader } from "../../components/controls";
+import { BackdropLoaderRef } from "../../components/controls/BackdropLoader";
 
 export const useSignup = ({ onSuccess = () => {}, onError = () => {} }) => {
   return useMutation({
@@ -10,14 +10,14 @@ export const useSignup = ({ onSuccess = () => {}, onError = () => {} }) => {
       return res.data;
     },
     onMutate: () => {
-      Loader?.handleOpen();
+      BackdropLoaderRef?.handleOpen();
     },
 
     onSuccess: () => onSuccess(),
     onError: (error) => onError(error),
     onSettled: () => {
       onSettled();
-      Loader?.handleClose();
+      BackdropLoaderRef?.handleClose();
     },
   });
 };
@@ -33,7 +33,7 @@ export const useLogin = ({
       return res.data;
     },
     onMutate: () => {
-      Loader?.handleOpen();
+      BackdropLoaderRef?.handleOpen();
     },
     onSuccess: (data) => {
       onSuccess(data);
@@ -43,7 +43,7 @@ export const useLogin = ({
     },
     onSettled: () => {
       onSettled();
-      Loader?.handleClose();
+      BackdropLoaderRef?.handleClose();
     },
   });
 };

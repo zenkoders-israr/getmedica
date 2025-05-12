@@ -50,12 +50,12 @@ function InformationCard({ data = {} }) {
             flexDirection: "column",
           }}
         >
-          <Typography variant="title" sx={{ fontSize: 26, fontWeight: 500 }}>
+          <Typography variant="title" sx={{ fontSize: 24, fontWeight: 500 }}>
             {name}
           </Typography>
           <Typography
             variant="subtitle"
-            sx={{ fontSize: 16, fontWeight: 500, color: colors.primaryColor }}
+            sx={{ fontSize: 14, fontWeight: 500, color: colors.primaryColor }}
           >
             {specialty}
           </Typography>

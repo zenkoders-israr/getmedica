@@ -11,12 +11,13 @@ const ReusableTextField = ({
   icon = null,
   name = "",
   iconPosition = "start",
-  label = "Label",
+  label = "",
   placeholder = null,
   fullWidth = true,
   disabled = false,
   error = false,
   helperText = "",
+  ...props
 }) => {
   const adornment = icon && (
     <InputAdornment position={iconPosition}>{icon}</InputAdornment>
@@ -39,6 +40,7 @@ const ReusableTextField = ({
         [iconPosition === "start" ? "startAdornment" : "endAdornment"]:
           adornment,
       }}
+      {...props}
     />
   );
 };

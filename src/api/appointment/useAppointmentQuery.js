@@ -1,14 +1,14 @@
 import { useQuery } from "@tanstack/react-query";
 import axiosInstance from "../interceptor";
-import { AvailabilityEndPoints } from "./endPoints";
-import { AVAILABILITY_KEYS } from "./queryKeys";
+import { AppointmentEndPoints } from "./endPoints";
+import { AppointmentQueryKeys } from "./queryKeys";
 import { ToastRef } from "../../components/controls/Toast";
 import { getErrorMessage } from "../../utils/helper";
 
-export const useGetAvailability = (id) => {
+export const useGetAppointment = (id) => {
     return useQuery({
-        queryKey: [AVAILABILITY_KEYS.GET_AVAILABILITY, id],
-        queryFn: () => axiosInstance.get(AvailabilityEndPoints.GET_AVAILABILITY(id)),
+        queryKey: [AppointmentQueryKeys.GET_APPOINTMENT, id],
+        queryFn: () => axiosInstance.get(AppointmentEndPoints.GET_APPOINTMENT(id)),
         enabled: !!id,
         staleTime: 0,
         select: (data) => data.data,

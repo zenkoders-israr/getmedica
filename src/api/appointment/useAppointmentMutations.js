@@ -1,13 +1,12 @@
 import { useMutation } from "@tanstack/react-query";
 import axiosInstance from "../interceptor";
-import { AvailabilityEndPoints } from "./endPoints";
+import { AppointmentEndPoints } from "./endPoints";
 import { BackdropLoaderRef } from "../../components/controls/BackdropLoader";
-import { AVAILABILITY_KEYS } from "./queryKeys";
-export const useSetAvailability = ({ onSuccess = () => {}, onError = () => {} }) => {
+
+export const useSetAppointment = ({ onSuccess = () => {}, onError = () => {} }) => {
     return useMutation({
-      mutationKey: [AVAILABILITY_KEYS.SET_AVAILABILITY],
       mutationFn: async (payload) => {
-        const res = await axiosInstance.post(AvailabilityEndPoints.SET_AVAILABILITY, payload);
+        const res = await axiosInstance.post(AppointmentEndPoints.SET_APPOINTMENT, payload);
         return res.data;
       },
       onMutate: () => {
@@ -21,4 +20,4 @@ export const useSetAvailability = ({ onSuccess = () => {}, onError = () => {} })
         BackdropLoaderRef?.handleClose();
       },
     });
-  };
+    };
