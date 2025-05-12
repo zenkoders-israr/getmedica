@@ -19,6 +19,14 @@ export const specializationOptions = [
   { label: "Radiology", value: 5 },
 ];
 
+export const SPECIALIZATION_MAPPER = {
+  1: "Orthopedics",
+  2: "Cardiology",
+  3: "Dermatology",
+  4: "General Surgery",
+  5: "Radiology",
+};
+
 export const drawerWidth = 300;
 export const headerHeight = 80;
 

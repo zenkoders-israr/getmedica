@@ -1,0 +1,4 @@
+export const USER_KEYS = {
+    GET_USER_DETAILS: 'GET_USER_DETAILS',
+    GET_DOCTORS: 'GET_DOCTORS',
+}

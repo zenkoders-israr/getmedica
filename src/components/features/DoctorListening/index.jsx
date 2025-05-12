@@ -7,17 +7,55 @@ import {
   Select,
   MenuItem,
 } from "@mui/material";
-import React, { useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { TextField } from "../../controls";
 import { images } from "../../../assets/images/index";
 import { specializationOptions } from "../../../utils/constant";
 import DoctorInformationCard from "./DoctorInformationCard";
 import { useNavigate } from "react-router-dom";
+import { useGetDoctors } from "../../../api/user/useUserQuery";
+import debounce from "lodash.debounce";
 
 function DoctorListening() {
   const navigate = useNavigate();
-  const [search, setSearch] = useState();
-  const [selectedSpecialization, setSelectedSpecialization] = useState("");
+  const [params, setParams] = useState({
+    name: "",
+    specialty: "",
+  });
+  const [search, setSearch] = useState("");
+  const [doctors, setDoctors] = useState([]);
+  const { data } = useGetDoctors(params);
+
+  const debouncedSearch = useCallback(
+    debounce((keyword) => {
+      setParams((prev) => ({ ...prev, name: keyword }));
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    setDoctors(data ?? []);
+  }, [data]);
+
+
+  useEffect(() => {
+    return () => {
+      debouncedSearch.cancel();
+    };
+  }, [debouncedSearch]);
+
+
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearch(value);
+    debouncedSearch(value);
+  };
+
+  const handleSpecializationChange = (e) => {
+    setParams({ ...params, specialty: e.target.value });
+  };
+
   return (
     <Box
       sx={{
@@ -43,7 +81,7 @@ function DoctorListening() {
             <TextField
               type="search"
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={handleSearch}
               icon={
                 <img
                   src={images.Search}
@@ -64,10 +102,10 @@ function DoctorListening() {
               <InputLabel id="specialization-label">Specialization</InputLabel>
               <Select
                 labelId="specialization-label"
-                value={selectedSpecialization || ""}
+                value={params.specialty || ""}
                 label="Specialization"
-                name="specialization"
-                onChange={(e) => setSelectedSpecialization(e.target.value)}
+                name="specialty"
+                onChange={handleSpecializationChange}
                 fullWidth
               >
                 {specializationOptions.map((option) => (
@@ -84,11 +122,22 @@ function DoctorListening() {
       {/* List Rendering */}
 
       <Grid container spacing={1} sx={{ mt: 5 }}>
-        <Grid size={3}>
-          <DoctorInformationCard
-            onCLick={() => navigate("details", { state: { doc_id: 1 } })}
-          />
-        </Grid>
+        {doctors.length ? (
+          doctors.map((doctor) => (
+            <Grid size={3} key={doctor.id}>
+              <DoctorInformationCard
+                data={doctor}
+                onCLick={() =>
+                  navigate("details", { state: { doc_id: doctor.id } })
+                }
+              />
+            </Grid>
+          ))
+        ) : (
+          <Grid size={12}>
+            <Typography>No doctors found</Typography>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

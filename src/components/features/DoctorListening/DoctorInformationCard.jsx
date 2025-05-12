@@ -11,15 +11,16 @@ import {
   moveIconContainer,
   doctorName,
 } from "./style";
+import { SPECIALIZATION_MAPPER } from "../../../utils/constant";
 
-function DoctorInformationCard({ data = {}, onCLick= () => {} }) {
+function DoctorInformationCard({ data = {}, onCLick = () => {} }) {
   const {
     name = "Dr. Name",
-    specialization: spec = "Specialization",
     availability = "Not specified",
     experience = "N/A",
     rating = "N/A",
-    avatarInitial = "D", 
+    avatarInitial = "D",
+    specialty: spec = 1,
   } = data;
 
   return (
@@ -35,7 +36,7 @@ function DoctorInformationCard({ data = {}, onCLick= () => {} }) {
             {name}
           </Typography>
           <Typography variant="subtitle" sx={specialization}>
-            {spec}
+            {SPECIALIZATION_MAPPER[spec]}
           </Typography>
         </Box>
       </Box>
