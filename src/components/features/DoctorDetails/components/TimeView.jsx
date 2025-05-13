@@ -17,13 +17,13 @@ function TimeView({ slot, selected, onSelect }) {
             : colors.secondaryBgColor,
           borderRadius: "8px",
         }}
-        onClick={() => !slot?.booked && onSelect(slot.id)}
+        onClick={() => !slot?.is_booked && onSelect(slot.id)}
       >
         <Typography
           sx={{
             fontSize: 18,
             fontWeight: 600,
-            color: slot?.booked
+            color: slot?.is_booked
               ? colors.textColorGray50
               : selected
               ? colors.textPrimaryColor

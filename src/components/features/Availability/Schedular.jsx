@@ -22,7 +22,7 @@ import { DAYS } from "../../../utils/constant";
 import { BackdropLoaderRef } from "../../controls/BackdropLoader";
 const Schedular = () => {
   const queryClient = useQueryClient();
-  const { data: availability } = useGetAvailability();
+  const { data } = useGetAvailability();
 
   const { mutate } = useSetAvailability({
     onSuccess: () => {
@@ -44,9 +44,9 @@ const Schedular = () => {
   );
 
   useEffect(() => {
-    if (!availability?.length) return;
+    if (!data?.scheduler?.length) return;
 
-    const availabilityMap = availability.reduce((map, item) => {
+    const availabilityMap = data?.scheduler.reduce((map, item) => {
       map[item.schedule_day] = item;
       return map;
     }, {});
@@ -69,7 +69,7 @@ const Schedular = () => {
     }, {});
 
     setSchedule(updatedSchedule);
-  }, [availability]);
+  }, [data]);
 
   const handleToggleDay = (value) => {
     setSchedule((prev) => {

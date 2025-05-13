@@ -6,68 +6,28 @@ import DateSelector from "../components/features/DoctorDetails/DateSelector";
 import TimeSelector from "../components/features/DoctorDetails/TimeSelector";
 import { TextField } from "../components/controls";
 import { colors } from "../theme/colors";
-import { useGetAppointment } from "../api/appointment/useAppointmentQuery";
 import { useSetAppointment } from "../api/appointment/useAppointmentMutations";
 import { ToastRef } from "../components/controls/Toast";
 import { getErrorMessage } from "../utils/helper";
 import { useNavigate } from "react-router-dom";
-
-const schedule = [
-  {
-    id: 1,
-    day: 1,
-    date: "06",
-    slots: [
-      {
-        id: 1,
-        time: "9:00 AM",
-        booked: true,
-      },
-      {
-        id: 2,
-        time: "10:00 AM",
-        booked: false,
-      },
-    ],
-  },
-  {
-    id: 2,
-    day: 2,
-    date: "07",
-    slots: [
-      {
-        id: 1,
-        time: "9:00 AM",
-        booked: true,
-      },
-      {
-        id: 2,
-        time: "10:00 AM",
-        booked: false,
-      },
-    ],
-  },
-  {
-    id: 3,
-    day: 3,
-    date: "08",
-    slots: [
-      {
-        id: 1,
-        time: "9:00 AM",
-        booked: true,
-      },
-    ],
-  },
-];
+import { useGetAvailability } from "../api/availability/useAvailabilityQuery";
+import { DAYS_MAPPER } from "../utils/constant";
+import {
+  getDayNumberFromDate,
+  mergeBookingSlots,
+} from "../components/features/DoctorDetails/helper";
+import { useSelector } from "react-redux";
+import { selectUser } from "../redux/Auth/Selectors";
 
 function DoctorDetails() {
   const navigate = useNavigate();
-
   const { state } = useLocation();
+  const user = useSelector(selectUser);
+  const [schedule, setSchedule] = useState([]);
   const [selectedDate, setSelectedDate] = useState(schedule[0]);
   const [selectedTime, setSelectedTime] = useState(null);
   const [reason, setReason] = useState("");
+  const [basicInfo, setBasicInfo] = useState(null);
 
   const { mutate: setAppointment } = useSetAppointment({
     onSuccess: () => {
@@ -79,15 +39,49 @@ function DoctorDetails() {
     },
   });
 
-  const { data: appointmentData, isLoading: isLoadingAppointment, refetch: refetchAppointment } =
-    useGetAppointment(state?.doc_id);
+  const { data: appointmentData, refetch: refetchAppointment } =
+    useGetAvailability(state?.doc_id);
 
-    useEffect(() => {
-      if (state?.doc_id) {
-        refetchAppointment();
-      }
-    }, [state?.doc_id]);
-    
+  useEffect(() => {
+    if (state?.doc_id) {
+      refetchAppointment();
+    }
+  }, [state?.doc_id]);
+
+  const updateState = () => {
+    if (!appointmentData) return;
+
+    const { doctor, scheduler } = appointmentData;
+    const docBasicInfo = { ...doctor };
+
+    if (scheduler?.length) {
+      const availabilityDays = [];
+
+      const scheduleData =
+        scheduler.map((item) => {
+          availabilityDays.push(DAYS_MAPPER[item.schedule_day]);
+
+          return {
+            id: item.id,
+            schedule_day: item.schedule_day,
+            date: getDayNumberFromDate(item.date),
+            slots: mergeBookingSlots(item.slots ?? []),
+          };
+        }) || [];
+
+      docBasicInfo.availability = availabilityDays.join(", ");
+      setSchedule(scheduleData);
+      setSelectedDate(scheduleData?.[0] || []);
+    }
+
+    setBasicInfo(docBasicInfo);
+  };
+
+  useEffect(() => {
+    if (appointmentData) {
+      updateState();
+    }
+  }, [appointmentData]);
 
   const handleBookAppointment = () => {
     if (!selectedTime || !reason) {
@@ -96,15 +90,14 @@ function DoctorDetails() {
     }
 
     setAppointment({
-      doctor_id: state?.doc_id,
-      time: selectedTime?.time,
-      reason: reason,
+      booking_slot_id: selectedTime,
+      patient_id: user?.id,
+      booking_reason: reason,
     });
   };
 
   return (
     <>
-    
       <Box
         sx={{
           mt: 3,
@@ -121,7 +114,7 @@ function DoctorDetails() {
           Book Appointment
         </Typography>
 
-        <InformationCard />
+        <InformationCard data={basicInfo} />
 
         <Typography
           sx={{
@@ -139,6 +132,7 @@ function DoctorDetails() {
           onSelectDate={(date) => {
             setSelectedDate(date);
             setSelectedTime(null);
+            setReason("");
           }}
         />
 

@@ -6,6 +6,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Button,
 } from "@mui/material";
 import React, { useState, useEffect, useCallback } from "react";
 import { TextField } from "../../controls";
@@ -37,14 +38,11 @@ function DoctorListening() {
     setDoctors(data ?? []);
   }, [data]);
 
-
   useEffect(() => {
     return () => {
       debouncedSearch.cancel();
     };
   }, [debouncedSearch]);
-
-
 
   const handleSearch = (e) => {
     const value = e.target.value;
@@ -54,6 +52,11 @@ function DoctorListening() {
 
   const handleSpecializationChange = (e) => {
     setParams({ ...params, specialty: e.target.value });
+  };
+
+  const handleResetFilters = () => {
+    setParams({ name: "", specialty: "" });
+    setSearch("");
   };
 
   return (
@@ -96,7 +99,6 @@ function DoctorListening() {
               fullWidth
             />
           </Grid>
-          <Grid size={0.5}></Grid>
           <Grid size={3}>
             <FormControl fullWidth>
               <InputLabel id="specialization-label">Specialization</InputLabel>
@@ -115,6 +117,14 @@ function DoctorListening() {
                 ))}
               </Select>
             </FormControl>
+          </Grid>
+
+          <Grid size={1}>
+            {params.name || params.specialty && (
+              <Button variant="contained" color="error" onClick={handleResetFilters}>
+                Reset Filters
+              </Button>
+            )}
           </Grid>
         </Grid>
       </Box>

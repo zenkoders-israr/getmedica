@@ -15,7 +15,7 @@ function DateView({ data, selectedDate, onSelectDate }) {
                 textAlign: "center",
               }}
             >
-              {DAYS_MAPPER[data.day]}
+              {DAYS_MAPPER[data.schedule_day]}
             </Typography>
           </Box>
 

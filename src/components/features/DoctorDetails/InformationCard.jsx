@@ -3,6 +3,7 @@ import { Avatar, Box, Typography } from "@mui/material";
 import { colors } from "../../../theme/colors";
 import { images } from "../../../assets/images";
 import { infoRow } from "../DoctorListening/style";
+import { SPECIALIZATION_MAPPER } from "../../../utils/constant";
 
 function InformationCard({ data = {} }) {
   const {
@@ -14,6 +15,7 @@ function InformationCard({ data = {} }) {
           injuries. Known for his patient-centered approach, he tailors
           treatment plans to fit individual needs, from preventative care to
           surgical solutions.`,
+    availability = "N/A",
   } = data || {};
   return (
     <Box
@@ -57,13 +59,13 @@ function InformationCard({ data = {} }) {
             variant="subtitle"
             sx={{ fontSize: 14, fontWeight: 500, color: colors.primaryColor }}
           >
-            {specialty}
+            {SPECIALIZATION_MAPPER[specialty]}
           </Typography>
         </Box>
       </Box>
 
       <Box sx={{ display: "flex", gap: "20px", px: 2 }}>
-        <InfoRow icon={images.Calendar} label={`Availability: N/A`} />
+        <InfoRow icon={images.Calendar} label={`Availability: ${availability}`} />
         <InfoRow icon={images.Teacher} label={`N/A of Experience`} />
         <InfoRow icon={images.Star} label={`N/A rating`} />
       </Box>

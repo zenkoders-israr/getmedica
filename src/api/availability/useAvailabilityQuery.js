@@ -9,18 +9,22 @@ import { BackdropLoaderRef } from "../../components/controls/BackdropLoader";
 export const useGetAvailability = (id = null) => {
   return useQuery({
     queryKey: [AVAILABILITY_KEYS.GET_AVAILABILITY, id],
-    queryFn: () => {
-      BackdropLoaderRef?.handleOpen();
-      return axiosInstance.get(AvailabilityEndPoints.GET_AVAILABILITY(id));
+    queryFn: async () => {
+      try {
+        BackdropLoaderRef?.handleOpen();
+        const response = await axiosInstance.get(
+          AvailabilityEndPoints.GET_AVAILABILITY(id)
+        );
+        return response;
+      } catch (error) {
+        ToastRef.showSnackbar(getErrorMessage(error), "error");
+      } finally {
+        BackdropLoaderRef?.handleClose();
+      }
     },
     staleTime: 0,
     select: (data) => {
-      BackdropLoaderRef?.handleClose();
       return data?.data?.data;
-    },
-    onError: (error) => {
-      ToastRef.showSnackbar(getErrorMessage(error), "error");
-      BackdropLoaderRef?.handleClose();
     },
   });
 };
